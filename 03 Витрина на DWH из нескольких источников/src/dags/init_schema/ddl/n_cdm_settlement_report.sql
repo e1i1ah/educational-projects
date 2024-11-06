@@ -1,0 +1,21 @@
+CREATE TABLE IF NOT EXISTS cdm.dm_settlement_report (
+	id int NOT NULL GENERATED ALWAYS AS IDENTITY,
+	restaurant_id varchar(255) NOT NULL,
+	restaurant_name varchar(100) NOT NULL,
+	settlement_date date NOT NULL,
+	orders_count int NOT NULL DEFAULT 0,
+	orders_total_sum numeric(14, 2) NOT NULL DEFAULT 0,
+	orders_bonus_payment_sum numeric(14, 2) NOT NULL DEFAULT 0,
+	orders_bonus_granted_sum numeric(14, 2) NOT NULL DEFAULT 0,
+	order_processing_fee numeric(14, 2) NOT NULL DEFAULT 0,
+	restaurant_reward_sum numeric(14, 2) NOT NULL DEFAULT 0,
+	CONSTRAINT dm_settlement_report_rest_id_sett_date_unique UNIQUE (restaurant_id, settlement_date),
+	CONSTRAINT dm_settlement_report_settlement_date_check CHECK ((settlement_date >= '2022-01-01'::date) AND (settlement_date < '2500-01-01'::date)),
+	CONSTRAINT dsr_id_pk PRIMARY KEY (id),
+	CONSTRAINT order_processing_fee_gt_0 CHECK (orders_count >= 0),
+	CONSTRAINT orders_bonus_granted_sum_gt_0 CHECK (orders_count >= 0),
+	CONSTRAINT orders_bonus_payment_sum_gt_0 CHECK (orders_count >= 0),
+	CONSTRAINT orders_count_gt_0 CHECK (orders_count >= 0),
+	CONSTRAINT orders_total_sum_gt_0 CHECK (orders_count >= 0),
+	CONSTRAINT restaurant_reward_sum_gt_0 CHECK (orders_count >= 0)
+);

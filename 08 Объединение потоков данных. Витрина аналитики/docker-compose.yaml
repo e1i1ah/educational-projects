@@ -1,0 +1,70 @@
+version: '3.8'
+
+services:
+  airflow-postgres:
+    image: postgres:15
+    container_name: airflow-postgres
+    environment:
+      POSTGRES_USER: airflow
+      POSTGRES_PASSWORD: airflow
+      POSTGRES_DB: airflow
+    ports:
+      - "5432:5432"
+    volumes:
+      - pgdata:/var/lib/postgresql/data
+
+  origin-postgres:
+    image: postgres:15
+    container_name: origin-postgres
+    environment:
+      POSTGRES_USER: ${PG_WAREHOUSE_USER}
+      POSTGRES_PASSWORD: ${PG_WAREHOUSE_PASSWORD}
+      POSTGRES_DB: ${PG_WAREHOUSE_DBNAME}
+    ports:
+      - "15433:5432"
+    volumes:
+      - origin_pgdata:/var/lib/postgresql/data
+
+  airflow:
+    build:
+      context: ./docker/airflow
+    environment:
+      AIRFLOW__CORE__EXECUTOR: LocalExecutor
+      AIRFLOW__CORE__SQL_ALCHEMY_CONN: postgresql+psycopg2://airflow:airflow@airflow-postgres/airflow
+    depends_on:
+      - airflow-postgres
+    volumes:
+      - ./src/dags:/opt/airflow/dags
+    ports:
+      - "8080:8080"
+    env_file:
+      - .env
+    command: >
+      bash -c "
+      airflow db init &&
+      airflow users create --username admin --password admin --firstname Admin --lastname User --role Admin --email admin@example.com &&
+      airflow scheduler &
+      airflow webserver
+      "
+
+
+  metabase:
+    image: metabase/metabase:latest
+    ports:
+      - "3000:3000"
+
+  pyspark:
+    build:
+      context: ./docker/pyspark
+    ports:
+      - "8888:8888"
+    environment:
+      JUPYTER_ENABLE_LAB: "yes"
+    volumes:
+      - ./src/py/origin_pg_loader:/home/jovyan/work
+    env_file:
+      - .env
+
+volumes:
+  pgdata:
+  origin_pgdata:

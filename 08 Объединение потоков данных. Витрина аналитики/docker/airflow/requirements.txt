@@ -1,0 +1,4 @@
+vertica_python
+psycopg2-binary
+pendulum
+pydantic

@@ -1,0 +1,6 @@
+psycopg2-binary
+python-dotenv
+vertica_python
+psycopg2
+pendulum
+pydantic
