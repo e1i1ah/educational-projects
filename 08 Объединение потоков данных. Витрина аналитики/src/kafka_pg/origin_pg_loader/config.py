@@ -34,7 +34,7 @@ class AppConfig:
                 f'password="{self.kafka_consumer_password}";'
             ),
             "kafka.ssl.truststore.location": "/home/jovyan/work/yrr.jks",
-            "kafka.ssl.truststore.password": "MMm3zaDd",
+            "kafka.ssl.truststore.password": "xxx",
             "subscribe": self.kafka_consumer_topic,
         }
 
